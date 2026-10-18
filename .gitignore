@@ -1,0 +1,14 @@
+.venv/
+logs/
+__pycache__/
+*.pyc
+db.sqlite3
+node_modules/
+dist/
+
+# Separate repository. It keeps its own history.
+only_readmes/
+
+# Credentials. keys/.env.example is the template.
+keys/.env
+keys/*.json

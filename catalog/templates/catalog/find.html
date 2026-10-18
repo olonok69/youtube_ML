@@ -1,0 +1,61 @@
+{% extends "catalog/base.html" %}
+{% load humanize %}
+
+{% block title %}Find a video{% endblock %}
+
+{% block header %}
+  <h1>Find a video</h1>
+  <p class="meta">Paste a YouTube link, or describe the video. The closest videos on this channel are listed below.</p>
+{% endblock %}
+
+{% block content %}
+  <form method="get" action="{% url 'find' %}">
+    <textarea name="q" aria-label="YouTube link or description" placeholder="https://youtu.be/... or a description of the video">{{ query }}</textarea>
+    <button type="submit">Find</button>
+  </form>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  {% if seed %}
+    <h2>This video</h2>
+    {% if seed.channel_id == channel_id %}
+      <a class="result" href="{% url 'video' seed.id %}?q={{ query|urlencode }}">
+        {% if seed.thumbnail %}<img src="{{ seed.thumbnail }}" alt="">{% else %}<span></span>{% endif %}
+        <div>
+          <p class="score">Opened from the link</p>
+          <h2>{{ seed.title }}</h2>
+          <p>{% if seed.published %}{{ seed.published|date:"j M Y" }} · {% endif %}{{ seed.view_count|intcomma }} views</p>
+        </div>
+      </a>
+    {% else %}
+      <p>That video is not on this channel. The list below is the closest videos that are.</p>
+      <p><strong>{{ seed.title }}</strong></p>
+    {% endif %}
+  {% endif %}
+
+  {% if query and not error %}
+    <h2>Most similar</h2>
+    {% if not matches %}
+      <p>No similar videos on this channel.</p>
+    {% else %}
+      <section class="results">
+        {% for match in matches %}
+          <a class="result" href="{% url 'video' match.video.id %}?q={{ query|urlencode }}">
+            {% if match.video.thumbnail %}<img src="{{ match.video.thumbnail }}" alt="">{% else %}<span></span>{% endif %}
+            <div>
+              <p class="score">{{ match.score }}% similar</p>
+              <h2>{{ match.video.title }}</h2>
+              <p>
+                {% if match.video.published %}{{ match.video.published|date:"j M Y" }}{% endif %}
+                {% if match.video.duration %} · {{ match.video.duration }}{% endif %}
+                · {{ match.video.view_count|intcomma }} views
+              </p>
+            </div>
+          </a>
+        {% endfor %}
+      </section>
+    {% endif %}
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Channel{% endblock %}</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3efe6;
+      --ink: #1c1917;
+      --muted: #57534e;
+      --card: #fffdf8;
+      --line: #e7e0d4;
+      --accent: #9a3412;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.5 "Segoe UI", sans-serif;
+    }
+    a { color: inherit; }
+    .shell { display: flex; min-height: 100vh; }
+    nav.side {
+      width: 220px;
+      flex: none;
+      background: var(--card);
+      border-right: 1px solid var(--line);
+      padding: 1.25rem 0.9rem;
+    }
+    nav.side p { margin: 0 0 1rem; font-weight: 650; }
+    nav.side a {
+      display: block;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 0.25rem;
+    }
+    nav.side a.active, nav.side a:hover { background: var(--ink); color: white; }
+    .page { flex: 1; min-width: 0; }
+    header, main { width: min(1100px, calc(100% - 2rem)); margin: 0 auto; }
+    header { padding: 1.5rem 0 0.5rem; }
+    @media (max-width: 720px) {
+      .shell { flex-direction: column; }
+      nav.side { width: auto; display: flex; flex-wrap: wrap; gap: 0.35rem; border-right: 0; border-bottom: 1px solid var(--line); }
+      nav.side p { width: 100%; }
+      nav.side a { margin: 0; }
+    }
+    .channel-row { display: flex; gap: 1rem; align-items: center; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; background: var(--line); }
+    h1 { font-size: 1.8rem; line-height: 1.2; margin: 0; }
+    .meta { color: var(--muted); margin: 0.25rem 0 0; }
+    .stats { display: flex; gap: 1rem; margin-top: 0.75rem; color: var(--muted); }
+    form { display: flex; gap: 0.5rem; margin: 1.25rem 0; }
+    input[type="search"] {
+      flex: 1;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      font: inherit;
+    }
+    button, .button {
+      border: 0;
+      background: var(--ink);
+      color: white;
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      text-decoration: none;
+      font: inherit;
+      cursor: pointer;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      display: block;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+    }
+    .card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--line); display: block; }
+    .card div, .detail { padding: 0.8rem 0.9rem 1rem; }
+    .card h2, .detail h2 { font-size: 1rem; line-height: 1.35; margin: 0 0 0.35rem; }
+    .card p, .detail p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+    .pager { display: flex; justify-content: space-between; gap: 1rem; margin: 1.25rem 0 2rem; }
+    .error {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+    }
+    .description { white-space: pre-wrap; color: var(--ink); }
+    .back { color: var(--accent); }
+    textarea {
+      width: 100%;
+      min-height: 7rem;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      font: inherit;
+      resize: vertical;
+    }
+    .results { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+    .result {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 0.8rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+    }
+    .result img { width: 100%; height: 100%; object-fit: cover; background: var(--line); display: block; }
+    .result div { padding: 0.8rem 0.9rem 0.9rem 0; }
+    .score { color: var(--accent); font-weight: 650; }
+    table.metadata { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    table.metadata th, table.metadata td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.45rem 0.6rem;
+      border-top: 1px solid var(--line);
+    }
+    table.metadata th { width: 11rem; color: var(--muted); font-weight: 600; }
+    @media (max-width: 720px) {
+      .result { grid-template-columns: 1fr; }
+      .result div { padding: 0.8rem 0.9rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="side" aria-label="Pages">
+      <p>Channel</p>
+      <a href="{% url 'channel' %}" {% if request.resolver_match.url_name == "channel" %}class="active"{% endif %}>Home</a>
+      <a href="{% url 'find' %}" {% if request.resolver_match.url_name == "find" %}class="active"{% endif %}>Find a video</a>
+    </nav>
+    <div class="page">
+      <header>
+        {% block header %}{% endblock %}
+      </header>
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+</body>
+</html>

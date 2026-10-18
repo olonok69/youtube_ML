@@ -1,0 +1,13 @@
+[project]
+name = "youtube-ml"
+version = "0.1.0"
+description = "Sync the YouTube channel into the only_readmes catalog. YouTube is read-only."
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.0,<7",
+    "google-api-python-client>=2.140",
+    "openpyxl>=3.1",
+]
+
+[tool.uv]
+package = false

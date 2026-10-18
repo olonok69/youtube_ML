@@ -1,0 +1,69 @@
+{% extends "catalog/base.html" %}
+{% load humanize %}
+
+{% block title %}{% if channel %}{{ channel.title }}{% else %}YouTube channel{% endif %}{% endblock %}
+
+{% block header %}
+  {% if channel %}
+    <div class="channel-row">
+      {% if channel.thumbnail %}<img class="avatar" src="{{ channel.thumbnail }}" alt="">{% endif %}
+      <div>
+        <h1>{{ channel.title }}</h1>
+        <p class="meta">
+          {% if channel.custom_url %}{{ channel.custom_url }} · {% endif %}
+          <a href="{{ channel.url }}">Open on YouTube</a>
+        </p>
+      </div>
+    </div>
+    <p class="stats">
+      <span>{{ channel.subscriber_count|intcomma }} subscribers</span>
+      <span>{{ channel.video_count|intcomma }} videos</span>
+      <span>{{ channel.view_count|intcomma }} views</span>
+    </p>
+  {% else %}
+    <h1>YouTube channel</h1>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% else %}
+    <form method="get" action="{% url 'channel' %}">
+      <input type="search" name="q" value="{{ query }}" placeholder="Search this channel" aria-label="Search this channel">
+      <button type="submit">Search</button>
+      {% if query %}<a class="button" href="{% url 'channel' %}">Clear</a>{% endif %}
+    </form>
+
+    {% if not videos %}
+      <p>No videos matched.</p>
+    {% endif %}
+
+    <section class="grid">
+      {% for video in videos %}
+        <a class="card" href="{% url 'video' video.id %}">
+          {% if video.thumbnail %}<img src="{{ video.thumbnail }}" alt="">{% endif %}
+          <div>
+            <h2>{{ video.title }}</h2>
+            <p>
+              {% if video.published %}{{ video.published|date:"j M Y" }}{% endif %}
+              {% if video.duration %} · {{ video.duration }}{% endif %}
+              · {{ video.view_count|intcomma }} views
+            </p>
+          </div>
+        </a>
+      {% endfor %}
+    </section>
+
+    <nav class="pager">
+      {% if prev_page_token %}
+        <a class="button" href="?{% if query %}q={{ query|urlencode }}&{% endif %}page={{ prev_page_token }}">Newer</a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      {% if next_page_token %}
+        <a class="button" href="?{% if query %}q={{ query|urlencode }}&{% endif %}page={{ next_page_token }}">Older</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}

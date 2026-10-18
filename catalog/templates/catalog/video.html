@@ -1,0 +1,42 @@
+{% extends "catalog/base.html" %}
+{% load humanize %}
+
+{% block title %}{% if video %}{{ video.title }}{% else %}Video{% endif %}{% endblock %}
+
+{% block header %}
+  {% if find_query %}
+    <p><a class="back" href="{% url 'find' %}?q={{ find_query|urlencode }}">Back to similar videos</a></p>
+  {% else %}
+    <p><a class="back" href="{% url 'channel' %}">Back to channel</a></p>
+  {% endif %}
+  {% if video %}<h1>{{ video.title }}</h1>{% endif %}
+{% endblock %}
+
+{% block content %}
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% else %}
+    <article class="card">
+      {% if video.thumbnail %}<img src="{{ video.thumbnail }}" alt="">{% endif %}
+      <div class="detail">
+        <p>
+          {% if video.published %}{{ video.published|date:"j M Y" }}{% endif %}
+          {% if video.duration %} · {{ video.duration }}{% endif %}
+          · {{ video.view_count|intcomma }} views
+          · {{ video.like_count|intcomma }} likes
+          · {{ video.comment_count|intcomma }} comments
+        </p>
+        <p style="margin-top: 0.8rem;"><a href="{{ video.url }}">Watch on YouTube</a></p>
+        <table class="metadata">
+          {% for label, value in metadata %}
+            <tr>
+              <th>{{ label }}</th>
+              <td>{{ value }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+        <p class="description" style="margin-top: 1rem;">{{ video.description }}</p>
+      </div>
+    </article>
+  {% endif %}
+{% endblock %}
