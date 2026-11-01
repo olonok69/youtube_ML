@@ -6,9 +6,10 @@ YouTube is read-only. Nothing here uploads, edits, or deletes a video.
 
 ## What to show
 
-1. [Get access to the YouTube Data API](youtube-api.md). An API key, and a service account when you want the MCP server to use one.
-2. [The MCP server](mcp-server.md). `youtube_mcp` reads the channel from Claude or any other MCP client.
-3. [The channel app](channel-app.md). The Django site built in this repo: the channel home, find-by-link-or-description, and the full metadata page.
+1. [Create the API access, the app, and the MCP server](create.md). The build order.
+2. [Get access to the YouTube Data API](youtube-api.md). An API key, and a service account when you want the MCP server to use one.
+3. [The MCP server](mcp-server.md). `youtube_mcp` reads the channel from Claude or any other MCP client.
+4. [The channel app](channel-app.md). The Django site: the channel home, find-by-link-or-description, and the full metadata page.
 
 ## What this repository is
 
