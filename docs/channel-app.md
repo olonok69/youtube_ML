@@ -43,4 +43,5 @@ The left menu is on every page.
 | `config/settings.py` | Loads `keys/.env`, sets the channel id |
 | `catalog/views.py` | Home, find, video |
 | `catalog/youtube_api.py` | YouTube calls, similarity, metadata rows |
+| `catalog/models.py`, `catalog/sync.py` | The channel as tables in `db.sqlite3`, filled by `manage.py sync_youtube` ([database.md](database.md)) |
 | `catalog/templates/catalog/` | Left menu, channel grid, find results, metadata table |
